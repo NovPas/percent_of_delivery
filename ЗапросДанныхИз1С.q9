@@ -1,0 +1,163 @@
+﻿<Structure xmlns="http://v8.1c.ru/8.1/data/core" xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:type="Structure">
+	<Property name="Формат">
+		<Value xsi:type="xs:string">КонсольЗапросов9000</Value>
+	</Property>
+	<Property name="Версия">
+		<Value xsi:type="xs:decimal">12</Value>
+	</Property>
+	<Property name="КоличествоЗапросов">
+		<Value xsi:type="xs:decimal">2</Value>
+	</Property>
+	<Property name="ИмяФайла">
+		<Value xsi:type="xs:string">C:\Users\p.novozhilov\Downloads\ЗапросДанныхИз1С.q9</Value>
+	</Property>
+	<Property name="СохраняемыеСостояния">
+		<Value xsi:type="Structure">
+			<Property name="ВидРезультата">
+				<Value xsi:type="xs:string">таблица</Value>
+			</Property>
+			<Property name="ОграничениеВыводимыхСтрок">
+				<Value xsi:type="xs:decimal">1000</Value>
+			</Property>
+			<Property name="ОграничениеВыводимыхСтрокВкл">
+				<Value xsi:type="xs:boolean">false</Value>
+			</Property>
+			<Property name="ОграничениеВыводимыхСтрокПервые">
+				<Value xsi:type="xs:decimal">1000</Value>
+			</Property>
+			<Property name="ОграничениеВыводимыхСтрокПервыеВкл">
+				<Value xsi:type="xs:boolean">true</Value>
+			</Property>
+			<Property name="ПараметрыЗапросаРядомСТекстом">
+				<Value xsi:type="xs:boolean">false</Value>
+			</Property>
+		</Value>
+	</Property>
+	<Property name="Опции">
+		<Value xsi:type="Structure">
+			<Property name="ОпцияСохранятьКомментарии">
+				<Value xsi:type="xs:boolean">true</Value>
+			</Property>
+			<Property name="ОпцияАвтосохранениеПередВыполнениемЗапроса">
+				<Value xsi:type="xs:boolean">true</Value>
+			</Property>
+			<Property name="ОпцияПериодОпросаВключенияВыключенияТехнологическогоЖурнала">
+				<Value xsi:type="xs:decimal">3</Value>
+			</Property>
+			<Property name="ОпцияОбрабатывать__">
+				<Value xsi:type="xs:boolean">true</Value>
+			</Property>
+			<Property name="ОпцияИнтервалОбновленияВыполненияАлгоритма">
+				<Value xsi:type="xs:decimal">1000</Value>
+			</Property>
+			<Property name="ОпцияИнтервалАвтосохранения">
+				<Value xsi:type="xs:decimal">60</Value>
+			</Property>
+		</Value>
+	</Property>
+	<Property name="ПакетЗапросов">
+		<Value xsi:type="Array">
+			<Value xsi:type="Structure">
+				<Property name="Имя">
+					<Value xsi:type="xs:string">Основная</Value>
+				</Property>
+				<Property name="ТекстЗапроса">
+					<Value xsi:type="xs:string">ВЫБРАТЬ
+	ЗаказКлиента.Ссылка КАК Ссылка,
+	ЗаказКлиента.Номер КАК Номер,
+	ЗаказКлиента.Дата КАК Дата,
+	ЗаказКлиента.СуммаДокумента КАК СуммаДокумента,
+	ЗаказКлиента.Подразделение КАК Подразделение
+ПОМЕСТИТЬ Заказы_ВТ
+ИЗ
+	Документ.ЗаказКлиента КАК ЗаказКлиента
+ГДЕ
+	ЗаказКлиента.Дата &gt; &amp;Дата
+;
+
+////////////////////////////////////////////////////////////////////////////////
+ВЫБРАТЬ
+	Заказы_ВТ.Ссылка КАК Ссылка,
+	СУММА(1) КАК Кол
+ПОМЕСТИТЬ ПоптыкиДоставки_ВТ
+ИЗ
+	РегистрСведений.ПопыткиДоставки КАК ПопыткиДоставки
+		ВНУТРЕННЕЕ СОЕДИНЕНИЕ Заказы_ВТ КАК Заказы_ВТ
+		ПО (Заказы_ВТ.Ссылка = ПопыткиДоставки.ЗаказКлиента)
+
+СГРУППИРОВАТЬ ПО
+	Заказы_ВТ.Ссылка
+;
+
+////////////////////////////////////////////////////////////////////////////////
+ВЫБРАТЬ
+	Заказы_ВТ.Номер КАК Номер,
+	Заказы_ВТ.Дата КАК ДатаЗаказа,
+	СтатусыЗаказовНаДоставкуСрезПоследних.Статус КАК Статус,
+	ЕСТЬNULL(ПоптыкиДоставки_ВТ.Кол, 0) КАК ПопыткиДоставки,
+	СтатусыЗаказовНаДоставкуСрезПоследних.Период КАК ДатаПоследнегоСтатуса,
+	Заказы_ВТ.СуммаДокумента КАК СуммаДокумента,
+	Заказы_ВТ.Подразделение КАК Подразделение
+ИЗ
+	РегистрСведений.СтатусыЗаказовНаДоставку.СрезПоследних КАК СтатусыЗаказовНаДоставкуСрезПоследних
+		ВНУТРЕННЕЕ СОЕДИНЕНИЕ Заказы_ВТ КАК Заказы_ВТ
+		ПО СтатусыЗаказовНаДоставкуСрезПоследних.Заказ = Заказы_ВТ.Ссылка
+		ЛЕВОЕ СОЕДИНЕНИЕ ПоптыкиДоставки_ВТ КАК ПоптыкиДоставки_ВТ
+		ПО (Заказы_ВТ.Ссылка = ПоптыкиДоставки_ВТ.Ссылка)
+ГДЕ
+	СтатусыЗаказовНаДоставкуСрезПоследних.Заказ.Дата &gt; &amp;Дата
+</Value>
+				</Property>
+				<Property name="ТекстКод">
+					<Value xsi:type="xs:string"/>
+				</Property>
+				<Property name="МетодИсполненияКода">
+					<Value xsi:type="xs:decimal">0</Value>
+				</Property>
+				<Property name="ПараметрыЗапроса">
+					<Value xsi:type="ValueListType">
+						<valueType/>
+						<lastId xsi:type="xs:decimal">0</lastId>
+						<item>
+							<value xsi:type="Structure">
+								<Property name="Имя">
+									<Value xsi:type="xs:string">Дата</Value>
+								</Property>
+								<Property name="ТипЗначения">
+									<Value xsi:type="TypeDescription">
+										<Type>xs:dateTime</Type>
+										<DateQualifiers>
+											<DateFractions>DateTime</DateFractions>
+										</DateQualifiers>
+									</Value>
+								</Property>
+								<Property name="Значение">
+									<Value xsi:type="xs:dateTime">2022-01-01T00:00:00</Value>
+								</Property>
+								<Property name="ТипКонтейнера">
+									<Value xsi:type="xs:decimal">0</Value>
+								</Property>
+								<Property name="Контейнер">
+									<Value xsi:type="xs:dateTime">2022-01-01T00:00:00</Value>
+								</Property>
+							</value>
+							<id xsi:type="xs:decimal">0</id>
+						</item>
+					</Value>
+				</Property>
+				<Property name="ВременныеТаблицы">
+					<Value xsi:type="ValueListType">
+						<valueType/>
+						<lastId xsi:type="xs:decimal">-1</lastId>
+					</Value>
+				</Property>
+				<Property name="Строки">
+					<Value xsi:type="Array"/>
+				</Property>
+				<Property name="Инфо">
+					<Value xsi:type="xs:string">1 000 / 0:00:05.281</Value>
+				</Property>
+			</Value>
+		</Value>
+	</Property>
+</Structure>
