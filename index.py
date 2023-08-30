@@ -1,31 +1,22 @@
-import pickle
-# import numpy as np
-import json
 import pandas as pd
-# import sys
-# from sklearn.neighbors import KNeighborsClassifier
+import pickle
+import json
 
 
-# Импортируем Flask для создания API
-from flask import Flask, request
+# import sklearn
 
-# load model
-filename = 'clf_model.sav'
-best_clf = pickle.load(open(filename, 'rb'))
+def handler(event, context):
+    body_str = event['body']
+    body_json = json.loads(body_str)
 
-# codes of departments
-with open('department_codes.json', 'r') as f:
-    department_codes = json.load(f)
+    # load model
+    filename = 'clf_model.sav'
+    best_clf = pickle.load(open(filename, 'rb'))
 
-# Инициализируем приложение Flask
-app = Flask(__name__)
+    # codes of departments
+    with open('department_codes.json', 'r') as f:
+        department_codes = json.load(f)
 
-
-# Создайте конечную точку API
-@app.route('/predict', methods=['GET', 'POST'])
-def predict():
-
-    body_json = request.json
     df = pd.json_normalize(body_json['predict_delivery'])
 
     # Preparation data
@@ -41,16 +32,13 @@ def predict():
     for i in range(len(predict_proba_result_list)):
         result_list.append({'OrderNumber': body_json['predict_delivery'][i]['OrderNumber'],
                             'delivery_prediction': round(predict_proba_result_list[i][1], 2)})
-
     return {
         'statusCode': 200,
         'body': json.dumps(
-            {'response': result_list
+            {
+                # 'context': context,
+                'response': result_list
             },
             default=vars,
         ),
     }
-
-
-if __name__ == '__main__':
-    app.run(debug=True,host='0.0.0.0')
